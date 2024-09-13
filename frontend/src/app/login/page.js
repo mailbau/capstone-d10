@@ -1,7 +1,7 @@
 import React from 'react';
-import Header from '../components/header';
+import Header from '../../components/header';
 import LoginForm from './loginform';
-import Footer from '../components/footer';
+import Footer from '../../components/footer';
 
 function WasteManagementDashboard() {
     return (
