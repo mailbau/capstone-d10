@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 function RegisterForm() {
     return (
@@ -65,6 +66,14 @@ function RegisterForm() {
                         </button>
                     </div>
                 </form>
+                <div className="flex justify-center items-center w-full py-4">
+                    <p className="text-base text-gray-600">
+                        Already have an account?{' '}
+                        <Link href="/login" className="text-blue-600 font-bold hover:underline">
+                            Login
+                        </Link>
+                    </p>
+                </div>
             </div>
         </div>
     );
