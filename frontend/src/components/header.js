@@ -1,6 +1,34 @@
-import React from 'react';
+"use client";
+
+import React, { useState, useEffect, useRef } from 'react';
 
 function Header() {
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null);
+
+    const toggleDropdown = () => {
+        setIsDropdownOpen(!isDropdownOpen);
+    };
+
+    // Handle clicks outside the dropdown
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsDropdownOpen(false); // Close dropdown if clicked outside
+            }
+        };
+
+        // Add event listener when dropdown is open
+        if (isDropdownOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        // Clean up event listener when component unmounts or dropdown closes
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isDropdownOpen]); // Only re-run the effect when isDropdownOpen changes
+
     return (
         <header className="flex justify-between items-center px-10 py-3.5 w-full border-b border-gray-200 min-h-[65px] max-md:px-5">
             <div className="flex items-center gap-4">
@@ -18,13 +46,31 @@ function Header() {
                     <li>Routes</li>
                     <li>Settings</li>
                 </ul>
-                <div className="flex gap-2 items-center">
+                <div className="relative flex gap-2 items-center">
                     <button className="flex justify-center items-center px-2.5 w-10 h-10 bg-lime-50 rounded-3xl" aria-label="Notification">
                         <img loading="lazy" src="/notification.svg" alt="Notification icon" />
                     </button>
-                    <button className="flex justify-center items-center px-2.5 w-10 h-10 bg-lime-50 rounded-3xl" aria-label="User profile">
+
+                    {/* User button that toggles dropdown */}
+                    <button
+                        className="flex justify-center items-center px-2.5 w-10 h-10 bg-lime-50 rounded-3xl relative"
+                        aria-label="User profile"
+                        onClick={toggleDropdown}
+                    >
                         <img loading="lazy" src="/user.svg" alt="User profile icon" className="object-contain w-5 aspect-square" />
                     </button>
+
+                    {/* Dropdown menu */}
+                    {isDropdownOpen && (
+                        <div ref={dropdownRef} className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg py-2 z-10">
+                            <ul className="text-sm text-gray-700">
+                                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Profile</li>
+                                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Settings</li>
+                                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Help</li>
+                                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Log Out</li>
+                            </ul>
+                        </div>
+                    )}
                 </div>
             </nav>
 
@@ -36,7 +82,5 @@ function Header() {
         </header>
     );
 }
-
-
 
 export default Header;
