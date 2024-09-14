@@ -3,7 +3,7 @@ import Header from '../../components/header';
 import LoginForm from './loginform';
 import Footer from '../../components/footer';
 
-function WasteManagementDashboard() {
+function LoginPage() {
     return (
         <div className="flex flex-col bg-white">
             <div className="flex overflow-hidden flex-col w-full bg-white min-h-[841px] max-md:max-w-full">
@@ -19,4 +19,4 @@ function WasteManagementDashboard() {
     );
 }
 
-export default WasteManagementDashboard;
+export default LoginPage;
