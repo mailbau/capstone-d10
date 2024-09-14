@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 
 function Header() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
+    const router = useRouter();
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
@@ -28,6 +30,11 @@ function Header() {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, [isDropdownOpen]); // Only re-run the effect when isDropdownOpen changes
+
+    const handleLogOut = () => {
+
+        router.push('/login');
+    }
 
     return (
         <header className="flex justify-between items-center px-10 py-3.5 w-full border-b border-gray-200 min-h-[65px] max-md:px-5">
@@ -67,7 +74,12 @@ function Header() {
                                 <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Profile</li>
                                 <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Settings</li>
                                 <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Help</li>
-                                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Log Out</li>
+                                <li
+                                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                    onClick={handleLogOut} // Log Out click handler
+                                >
+                                    Log Out
+                                </li>
                             </ul>
                         </div>
                     )}
