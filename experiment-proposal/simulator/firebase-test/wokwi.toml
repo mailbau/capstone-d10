@@ -1,0 +1,11 @@
+[wokwi]
+version = 1
+elf = ".pio/build/esp32dev/firmware.elf"
+firmware = ".pio/build/esp32dev/firmware.bin"
+
+[net]
+gateway="ws://localhost:9011"
+
+[[net.forward]]
+from = "smart-bin-capstone-d10-default-rtdb.asia-southeast1.firebasedatabase.app"
+to = "smart-bin-capstone-d10-default-rtdb.asia-southeast1.firebasedatabase.app"
