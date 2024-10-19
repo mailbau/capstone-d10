@@ -1,0 +1,29 @@
+# Node modules
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Environment Variables
+.env
+firebaseAdminKey.json
+
+# Build output
+dist/
+build/
+
+# Temporary files
+tmp/
+temp/
+.cache/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Other
+coverage/
+*.tgz
+*.lock
