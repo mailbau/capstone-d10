@@ -4,6 +4,7 @@ const listEndpoints = require('express-list-endpoints');
 require('dotenv').config();
 
 const userRouter = require('./routers/userRouter');
+const tpsRouter = require('./routers/tpsRouter');
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use(express.json());
 
 // Routes
 app.use('/user', userRouter);
+app.use('/tps', tpsRouter);
 
 // Set the port from environment variables or use 8080
 const PORT = process.env.PORT || 8080;
