@@ -15,6 +15,22 @@ const userController = {
         }
     },
 
+    // Get user by ID
+    getUserById: async (req, res) => {
+        try {
+            const userId = req.params.id;
+            const userSnapshot = await db.ref(`/users/${userId}`).get();
+            if (!userSnapshot.exists()) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+            const userData = userSnapshot.val();
+            res.status(200).json(userData);
+        } catch (error) {
+            console.error('Error getting user by ID', error);
+            res.status(500).json({ error: error.message });
+        }
+    },
+
     // Add user
     addUser: async (req, res) => {
         try {
@@ -45,6 +61,46 @@ const userController = {
             res.status(500).json({ error: error.message });
         }
     },
+
+    // Update user by ID
+    updateUser: async (req, res) => {
+        try {
+            const userId = req.params.id;
+            const { first_name, last_name, user_email, user_password } = req.body;
+
+            // Hash the password if it's being updated
+            let updatedPassword = user_password;
+            if (user_password) {
+                updatedPassword = await bcrypt.hash(user_password, 10);
+            }
+
+            // Update user data
+            const updatedUser = {
+                first_name,
+                last_name,
+                user_email,
+                user_password: updatedPassword
+            };
+
+            await db.ref(`/users/${userId}`).update(updatedUser);
+            res.status(200).json({ message: 'User updated successfully' });
+        } catch (error) {
+            console.error('Error updating user', error);
+            res.status(500).json({ error: error.message });
+        }
+    },
+
+    // Delete user by ID
+    deleteUser: async (req, res) => {
+        try {
+            const userId = req.params.id;
+            await db.ref(`/users/${userId}`).remove();
+            res.status(200).json({ message: 'User deleted successfully' });
+        } catch (error) {
+            console.error('Error deleting user', error);
+            res.status(500).json({ error: error.message });
+        }
+    }
 
 };
 
