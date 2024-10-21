@@ -2,10 +2,10 @@ const express = require('express');
 const tpsController = require('../controllers/tpsController');
 const router = express.Router();
 
-// Get all users
+// Get all tps
 router.get('/', tpsController.getAllTPS);
 
-// Add user
+// Add tps
 router.post('/register', tpsController.addTPS);
 
 // Get specific TPS by ID
