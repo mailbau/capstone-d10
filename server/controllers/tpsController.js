@@ -1,5 +1,4 @@
 const db = require('../config/firebase');
-const { v4: uuidv4 } = require('uuid'); // To generate unique tpsId
 
 const tpsController = {
 
@@ -22,7 +21,6 @@ const tpsController = {
 
             // Create a new TPS object
             const newTPS = {
-                tpsId: uuidv4(),  // Generate a unique tpsId
                 name,
                 address,
                 latitude,
@@ -39,17 +37,17 @@ const tpsController = {
         }
     },
 
-    // Get a specific TPS by tpsId
+    // Get TPS by Firebase ID
     getTPSById: async (req, res) => {
         try {
             const { tpsId } = req.params;
             const tpsSnapshot = await db.ref(`/tps/${tpsId}`).get();
-            const tps = tpsSnapshot.val();
 
-            if (!tps) {
-                return res.status(404).json({ message: `TPS with ID ${tpsId} not found` });
+            if (!tpsSnapshot.exists()) {
+                return res.status(404).json({ message: 'TPS not found' });
             }
 
+            const tps = tpsSnapshot.val();
             res.status(200).json(tps);
         } catch (error) {
             console.error('Error getting TPS by ID', error);
@@ -57,13 +55,19 @@ const tpsController = {
         }
     },
 
-    // Update an existing TPS by tpsId
+    // Update TPS by Firebase ID
     updateTPS: async (req, res) => {
         try {
             const { tpsId } = req.params;
             const { name, address, latitude, longitude, gmapsLink } = req.body;
 
-            // Updated TPS data
+            // Check if TPS exists
+            const tpsSnapshot = await db.ref(`/tps/${tpsId}`).get();
+            if (!tpsSnapshot.exists()) {
+                return res.status(404).json({ message: 'TPS not found' });
+            }
+
+            // Update TPS with new data
             const updatedTPS = {
                 name,
                 address,
@@ -72,29 +76,33 @@ const tpsController = {
                 gmapsLink
             };
 
-            // Update TPS in Firebase
             await db.ref(`/tps/${tpsId}`).update(updatedTPS);
-            res.status(200).json({ message: `TPS with ID ${tpsId} updated successfully`, updatedTPS });
+            res.status(200).json({ message: 'TPS updated successfully', tps: updatedTPS });
         } catch (error) {
             console.error('Error updating TPS', error);
             res.status(500).json({ error: error.message });
         }
     },
 
-    // Delete a TPS by tpsId
+    // Delete TPS by Firebase ID
     deleteTPS: async (req, res) => {
         try {
             const { tpsId } = req.params;
 
-            // Delete TPS from Firebase
-            await db.ref(`/tps/${tpsId}`).remove();
+            // Check if TPS exists
+            const tpsSnapshot = await db.ref(`/tps/${tpsId}`).get();
+            if (!tpsSnapshot.exists()) {
+                return res.status(404).json({ message: 'TPS not found' });
+            }
 
-            res.status(200).json({ message: `TPS with ID ${tpsId} deleted successfully` });
+            // Delete the TPS
+            await db.ref(`/tps/${tpsId}`).remove();
+            res.status(200).json({ message: 'TPS deleted successfully' });
         } catch (error) {
             console.error('Error deleting TPS', error);
             res.status(500).json({ error: error.message });
         }
-    },
+    }
 };
 
 module.exports = tpsController;
