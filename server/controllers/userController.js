@@ -18,13 +18,20 @@ const userController = {
     // Get user by ID
     getUserById: async (req, res) => {
         try {
-            const userId = req.params.id;
+            const userId = req.params.userId;
+
+            if (!userId || typeof userId !== 'string') {
+                return res.status(400).json({ error: 'Invalid user ID' });
+            }
+
             const userSnapshot = await db.ref(`/users/${userId}`).get();
+
             if (!userSnapshot.exists()) {
                 return res.status(404).json({ message: 'User not found' });
             }
-            const userData = userSnapshot.val();
-            res.status(200).json(userData);
+
+            const user = userSnapshot.val();
+            res.status(200).json(user);
         } catch (error) {
             console.error('Error getting user by ID', error);
             res.status(500).json({ error: error.message });
@@ -65,8 +72,19 @@ const userController = {
     // Update user by ID
     updateUser: async (req, res) => {
         try {
-            const userId = req.params.id;
+            const userId = req.params.userId; // Ensure userId is properly extracted
+
+            if (!userId || typeof userId !== 'string') {
+                return res.status(400).json({ error: 'Invalid user ID' });
+            }
+
             const { first_name, last_name, user_email, user_password } = req.body;
+
+            // Check if user exists
+            const userSnapshot = await db.ref(`/users/${userId}`).get();
+            if (!userSnapshot.exists()) {
+                return res.status(404).json({ message: 'User not found' });
+            }
 
             // Hash the password if it's being updated
             let updatedPassword = user_password;
@@ -83,7 +101,7 @@ const userController = {
             };
 
             await db.ref(`/users/${userId}`).update(updatedUser);
-            res.status(200).json({ message: 'User updated successfully' });
+            res.status(200).json({ message: 'User updated successfully', updatedUser });
         } catch (error) {
             console.error('Error updating user', error);
             res.status(500).json({ error: error.message });
@@ -93,7 +111,18 @@ const userController = {
     // Delete user by ID
     deleteUser: async (req, res) => {
         try {
-            const userId = req.params.id;
+            const userId = req.params.userId; // Ensure userId is properly extracted
+
+            if (!userId || typeof userId !== 'string') {
+                return res.status(400).json({ error: 'Invalid user ID' });
+            }
+
+            // Check if user exists
+            const userSnapshot = await db.ref(`/users/${userId}`).get();
+            if (!userSnapshot.exists()) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
             await db.ref(`/users/${userId}`).remove();
             res.status(200).json({ message: 'User deleted successfully' });
         } catch (error) {
