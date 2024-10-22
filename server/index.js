@@ -6,6 +6,7 @@ require('dotenv').config();
 const userRouter = require('./routers/userRouter');
 const tpsRouter = require('./routers/tpsRouter');
 const routeRouter = require('./routers/routeRouter');
+const sensorRouter = require('./routers/sensorRouter');
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use(express.json());
 app.use('/user', userRouter);
 app.use('/tps', tpsRouter);
 app.use('/route', routeRouter);
+app.use('/sensor', sensorRouter);
 
 // Set the port from environment variables or use 8080
 const PORT = process.env.PORT || 8080;
