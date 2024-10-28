@@ -8,15 +8,28 @@ typedef struct struct_message {
     long sensor[4];
 } struct_message;
 
-// Create a struct_message called myData
-struct_message myData;
+typedef struct wall_data {
+    int id;
+    int filled[4] =  {0, 0, 0, 0};
+} wall_data;
 
-// Create a structure to hold the readings from each board
-struct_message board1;
-struct_message board2;
+
+typedef struct level_message {
+  int tpsId;
+  wall_data wallStatus[2];
+} level_message;
+
+// Create a struct_message called myData
+struct_message myData[2];
 
 // Create an array with all the structures
-struct_message boardsStruct[2] = {board1, board2};
+struct_message boardsStruct[4];
+
+level_message wallData;
+
+const long threshold = 3;
+const long longThreshold = 20;
+
 
 // callback function that will be executed when data is received
 void OnDataRecv(const uint8_t * mac_addr, const uint8_t *incomingData, int len) {
@@ -26,14 +39,46 @@ void OnDataRecv(const uint8_t * mac_addr, const uint8_t *incomingData, int len) 
            mac_addr[0], mac_addr[1], mac_addr[2], mac_addr[3], mac_addr[4], mac_addr[5]);
   Serial.println(macStr);
   memcpy(&myData, incomingData, sizeof(myData));
-  Serial.printf("Board ID %u: %u bytes\n", myData.id, len);
 
   // Update the structures with the new incoming data
-  memcpy(boardsStruct[myData.id-1].sensor, myData.sensor, sizeof(myData.sensor));
-  for (int i = 0; i < sizeof(boardsStruct[myData.id-1].sensor) / sizeof(boardsStruct[myData.id-1].sensor[0]); i++) {
-    Serial.printf("Sensor %d value: %d\n", i, boardsStruct[myData.id-1].sensor[i]);
+  memcpy(boardsStruct[myData[0].id-1].sensor, myData[0].sensor, sizeof(myData[0].sensor));
+  memcpy(boardsStruct[myData[1].id-1].sensor, myData[1].sensor, sizeof(myData[1].sensor));
+
+  boardsStruct[myData[0].id-1].id = myData[0].id;
+  boardsStruct[myData[1].id-1].id = myData[1].id;
+
+
+  Serial.printf("Board ID %u: \n", myData[0].id);
+  for (int i = 0; i < sizeof(boardsStruct[myData[0].id-1].sensor) / sizeof(boardsStruct[myData[0].id-1].sensor[0]); i++) {
+    Serial.printf("Sensor %d value: %d\n", i, boardsStruct[myData[0].id-1].sensor[i]);
+  }
+  Serial.printf("Board ID %u: \n", myData[1].id);
+  for (int i = 0; i < sizeof(boardsStruct[myData[0].id-1].sensor) / sizeof(boardsStruct[myData[0].id-1].sensor[0]); i++) {
+    Serial.printf("Sensor %d value: %d\n", i, boardsStruct[myData[1].id-1].sensor[i]);
   }
   Serial.println();
+
+  wallData.tpsId = 1;
+  Serial.printf("TPS:\ntpsId: %d\n", wallData.tpsId);
+  for (int i = 0; i < 2; i++) {
+    for (int j = 0; j < 4; j++) {
+      if (boardsStruct[i].id == 1) {
+        if (boardsStruct[i].sensor[j] < longThreshold) {
+          wallData.wallStatus[i].filled[j] = 1;
+        } else {
+          wallData.wallStatus[i].filled[j] = 0;
+        }
+      } else {
+        if (boardsStruct[i].sensor[j] < threshold) {
+          wallData.wallStatus[i].filled[j] = 1;
+        } else {
+          wallData.wallStatus[i].filled[j] = 0;
+        }
+      }
+      Serial.printf("Wall Status for wall %d at sensor %d: %d\n", boardsStruct[i].id, j, wallData.wallStatus[i].filled[j]);
+    }
+  }
+
 }
 
  
