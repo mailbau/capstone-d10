@@ -39,7 +39,7 @@ function Header() {
     }, []);
 
     const handleLogOut = () => {
-
+        localStorage.removeItem('token');
         router.push('/login');
     }
 
