@@ -6,10 +6,10 @@
 uint8_t broadcastAddress[] = {0x34, 0x5F, 0x45, 0xA9, 0x47, 0x54};
 
 
-const int TRIGGER_PINS[4] = {26, 25, 33, 32};
-const int ECHO_PINS[4] = {13, 12, 14, 27};
+const int TRIGGER_PINS[8] = {26, 25, 33, 32, 5, 4, 18, 23};
+const int ECHO_PINS[8] = {27, 13, 12, 14, 15, 2, 19, 22};
 
-long distances[4];
+long distances[8];
 
 typedef struct struct_message {
     int id;
@@ -17,7 +17,7 @@ typedef struct struct_message {
 } struct_message;
 
 
-struct_message myData;
+struct_message myData[2];
 
 
 esp_now_peer_info_t peerInfo;
@@ -49,8 +49,8 @@ void setup() {
     return;
   }
 
-  // Initialize the pins for all 4 sensors
-  for (int i = 0; i < 4; i++) {
+  // Initialize the pins for all 8 sensors
+  for (int i = 0; i < 8; i++) {
     pinMode(TRIGGER_PINS[i], OUTPUT);
     pinMode(ECHO_PINS[i], INPUT);
   }
@@ -59,8 +59,9 @@ void setup() {
  
 void loop() {
   // Set values to send
-  myData.id = 2;
-  for (int i = 0; i < 4; i++) {
+  myData[0].id = 1;  // Identifier for the first struct
+  myData[1].id = 2;  // Identifier for the second struct
+  for (int i = 0; i < 8; i++) {
     distances[i] = measureDistance(TRIGGER_PINS[i], ECHO_PINS[i]);
     
     // Print the measured distance
@@ -69,8 +70,8 @@ void loop() {
     Serial.print(": ");
     Serial.print(distances[i]);
     Serial.println(" cm");
-
-    myData.sensor[i] = distances[i];
+    
+    myData[i / 4].sensor[i % 4] = distances[i];
     
     delay(100); // Small delay to avoid flooding the serial output
   }
@@ -103,3 +104,6 @@ long measureDistance(int triggerPin, int echoPin) {
   
   return distance;
 }
+
+
+
