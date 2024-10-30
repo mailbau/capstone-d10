@@ -69,7 +69,6 @@ const userController = {
         }
     },
 
-    // Update user by ID
     updateUser: async (req, res) => {
         try {
             const userId = req.params.userId; // Ensure userId is properly extracted
@@ -86,20 +85,20 @@ const userController = {
                 return res.status(404).json({ message: 'User not found' });
             }
 
-            // Hash the password if it's being updated
-            let updatedPassword = user_password;
+            // Prepare the updated user data
+            const updatedUser = {};
+
+            // Only include fields if they are defined
+            if (first_name) updatedUser.first_name = first_name;
+            if (last_name) updatedUser.last_name = last_name;
+            if (user_email) updatedUser.user_email = user_email;
+
+            // Hash the password if it's provided
             if (user_password) {
-                updatedPassword = await bcrypt.hash(user_password, 10);
+                updatedUser.user_password = await bcrypt.hash(user_password, 10);
             }
 
-            // Update user data
-            const updatedUser = {
-                first_name,
-                last_name,
-                user_email,
-                user_password: updatedPassword
-            };
-
+            // Update user data only with fields that are defined
             await db.ref(`/users/${userId}`).update(updatedUser);
             res.status(200).json({ message: 'User updated successfully', updatedUser });
         } catch (error) {
@@ -107,6 +106,7 @@ const userController = {
             res.status(500).json({ error: error.message });
         }
     },
+
 
     // Delete user by ID
     deleteUser: async (req, res) => {
