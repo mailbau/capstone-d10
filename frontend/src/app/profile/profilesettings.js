@@ -88,15 +88,13 @@ function ProfileSettings() {
     };
 
     return (
-        <section className="flex overflow-hidden flex-col flex-1 shrink items-start w-full basis-0 max-w-[960px] min-h-[695px] min-w-[240px] max-md:max-w-full">
-            <div className="flex flex-wrap gap-3 justify-between items-start self-stretch p-4 w-full max-md:max-w-full">
-                <div className="flex flex-col w-72 min-w-[288px]">
-                    <h2 className="w-full text-4xl font-extrabold tracking-tighter leading-none text-stone-900">Profile Settings</h2>
-                    <p className="mt-3 w-full text-base text-stone-500">Update your personal details</p>
-                </div>
+        <section className="flex overflow-hidden flex-col items-center w-full max-w-[960px] min-h-[695px] min-w-[240px] p-6">
+            <div className="flex flex-col items-center w-full p-4">
+                <h2 className="text-4xl font-extrabold tracking-tighter text-stone-900">Profile Settings</h2>
+                <p className="mt-3 text-base text-stone-500">Update your personal details</p>
             </div>
             {userData && (
-                <form onSubmit={handleSaveChanges} className="px-4 w-full">
+                <form onSubmit={handleSaveChanges} className="px-4 w-full max-w-md">
                     {inputFields.map((field, index) => (
                         <InputField
                             key={index}
@@ -104,7 +102,7 @@ function ProfileSettings() {
                             placeholder={field.placeholder}
                             type={field.type || 'text'}
                             value={field.value}
-                            readOnly={!isEditing} // Set readOnly based on isEditing state
+                            readOnly={!isEditing}
                             onChange={(e) => {
                                 const updatedFields = [...inputFields];
                                 updatedFields[index].value = e.target.value;
@@ -112,22 +110,20 @@ function ProfileSettings() {
                             }}
                         />
                     ))}
-                    <div className="flex justify-center items-start self-stretch px-4 py-3 w-full text-base font-bold text-center text-white max-md:max-w-full">
+                    <div className="flex justify-center items-center py-3 w-full">
                         <button
-                            type="button" // Change this to button to toggle edit mode
+                            type="button"
                             onClick={toggleEditMode}
-                            className="flex overflow-hidden flex-1 shrink justify-center items-center px-5 bg-blue-600 rounded-3xl basis-0 max-w-[480px] min-h-[48px] min-w-[84px] w-[480px] max-md:max-w-full"
+                            className="px-5 py-3 bg-blue-600 rounded-3xl text-white font-bold max-w-[480px] mx-2"
                         >
-                            <span className="overflow-hidden self-stretch my-auto w-[111px]">
-                                {isEditing ? 'Cancel' : 'Edit'}
-                            </span>
+                            {isEditing ? 'Cancel' : 'Edit'}
                         </button>
                         {isEditing && (
                             <button
                                 type="submit"
-                                className="ml-4 flex overflow-hidden flex-1 shrink justify-center items-center px-5 bg-emerald-600 rounded-3xl basis-0 max-w-[480px] min-h-[48px] min-w-[84px] w-[480px] max-md:max-w-full"
+                                className="px-5 py-3 bg-emerald-600 rounded-3xl text-white font-bold max-w-[480px] mx-2"
                             >
-                                <span className="overflow-hidden self-stretch my-auto w-[111px]">Save Changes</span>
+                                Save Changes
                             </button>
                         )}
                     </div>
