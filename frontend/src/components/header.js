@@ -59,10 +59,20 @@ function Header() {
             {showFullHeader && (
                 <nav className="flex items-center gap-8 max-md:hidden">
                     <ul className="flex gap-9 items-center text-sm font-medium whitespace-nowrap text-stone-900">
-                        <li
-                            onClick={() => router.push('/dashboard')}
-                        >Dashboard</li>
-                        <li>Routes</li>
+                        <li>
+                            <button
+                                onClick={() => router.push('/dashboard')}
+                            >
+                                Dashboard
+                            </button>
+                        </li>
+                        <li>
+                            <button
+                                onClick={() => router.push('/routes')}
+                            >
+                                Routes
+                            </button>
+                        </li>
                     </ul>
                     <div className="relative flex gap-2 items-center">
                         <button
