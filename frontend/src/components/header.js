@@ -59,7 +59,9 @@ function Header() {
             {showFullHeader && (
                 <nav className="flex items-center gap-8 max-md:hidden">
                     <ul className="flex gap-9 items-center text-sm font-medium whitespace-nowrap text-stone-900">
-                        <li>Dashboard</li>
+                        <li
+                            onClick={() => router.push('/dashboard')}
+                        >Dashboard</li>
                         <li>Routes</li>
                     </ul>
                     <div className="relative flex gap-2 items-center">
@@ -104,7 +106,10 @@ function Header() {
                                 style={{ top: '100%' }}
                             >
                                 <ul className="text-sm text-gray-700">
-                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Profile</li>
+                                    <li
+                                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                        onClick={() => router.push('/profile')} // Profile click handler
+                                    >Profile</li>
                                     <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Settings</li>
                                     <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Help</li>
                                     <li
