@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import React from 'react';
+import Header from '@/components/header';
+import Footer from '@/components/footer';
 
 export default function Home() {
   return (
@@ -7,8 +9,10 @@ export default function Home() {
       {/* Header Section */}
       <header className="flex items-center justify-between w-full px-10 py-6 bg-white shadow-md">
         <div className="flex items-center gap-3">
-          <img src="/logo.svg" alt="Logo" className="w-10 h-10" />
-          <h1 className="text-2xl font-bold">Waste Management Solutions</h1>
+          <img loading="lazy" src="/logo.svg" alt="logo" className="w-8 h-8" />
+          <h1 className="text-2xl font-semibold text-stone-900">
+            Capstone D-10
+          </h1>
         </div>
         <nav>
           <Link href="/login" className="px-5 py-2 text-white bg-emerald-600 rounded-full hover:bg-emerald-700 transition duration-200">
@@ -64,17 +68,7 @@ export default function Home() {
       </section>
 
       {/* Footer Section */}
-      <footer className="flex flex-col items-center w-full px-6 py-4 bg-white border-t border-gray-200">
-        <p className="text-gray-600 text-sm">&copy; {new Date().getFullYear()} Waste Management Solutions. All rights reserved.</p>
-        <div className="mt-2 flex gap-4">
-          <Link href="/privacy" className="text-gray-600 hover:text-gray-800">
-            Privacy Policy
-          </Link>
-          <Link href="/terms" className="text-gray-600 hover:text-gray-800">
-            Terms of Service
-          </Link>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
