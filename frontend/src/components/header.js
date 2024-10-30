@@ -68,9 +68,9 @@ function Header() {
                         </li>
                         <li>
                             <button
-                                onClick={() => router.push('/routes')}
+                                onClick={() => router.push('/management')}
                             >
-                                Routes
+                                TPS Management
                             </button>
                         </li>
                     </ul>
