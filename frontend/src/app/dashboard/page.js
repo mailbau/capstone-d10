@@ -5,39 +5,43 @@ import Footer from '../../components/footer';
 
 function DashboardPage() {
     return (
-        <div className="flex overflow-hidden flex-col bg-white">
+        <div className="flex flex-col bg-gray-50 min-h-screen">
             <Header />
-            <main className="flex justify-center items-start px-40 py-5 w-full min-h-[931px] max-md:px-5 max-md:max-w-full">
-                <div className="flex flex-col min-h-[891px] min-w-[240px] w-[960px] max-md:max-w-full">
-                    {/* Info Card */}
-                    <InfoCard
-                        title="Total Distance"
-                        description="The total distance of the optimal garbage collection route is 50 miles."
-                        link={"/totaldistance"}
-                    />
-                    <InfoCard
-                        title="Emission Information"
-                        description="The emission information for the optimal garbage collection route is 5 tons of CO2."
-                        link={"/emission"}
-                    />
-                    {/* Map */}
-                    <section className="flex items-start px-4 py-3 max-w-full min-h-[546px] w-[960px]">
-                        <img loading="lazy" src="/tempmap.png" alt="Waste Management Route Map" className="object-contain rounded-xl aspect-[1.78] min-w-[240px] w-[928px]" />
+            <main className="flex justify-center items-start px-6 py-10 w-full max-md:px-5">
+                <div className="flex flex-col items-center w-full max-w-4xl space-y-8">
+                    {/* Info Cards Section */}
+                    <section className="flex flex-wrap justify-center gap-6 w-full">
+                        <InfoCard
+                            title="Total Distance"
+                            description="The total distance of the optimal garbage collection route is 50 miles."
+                            link={"/totaldistance"}
+                        />
+                        <InfoCard
+                            title="Emission Information"
+                            description="The emission information for the optimal garbage collection route is 5 tons of CO2."
+                            link={"/emission"}
+                        />
                     </section>
-                    {/* Buttons */}
-                    <section className="flex items-start px-4 py-3 w-full text-sm font-bold tracking-wide max-w-[960px] min-h-[64px] max-md:max-w-full">
-                        <div className="flex gap-3 px-px min-w-[240px] w-[318px]">
-                            <button className="flex justify-center items-start text-white min-h-[40px]">
-                                <span className="flex overflow-hidden justify-center items-center px-4 bg-emerald-600 rounded-3xl min-h-[40px] w-[129px]">
-                                    Update Route
-                                </span>
-                            </button>
-                            <button className="flex justify-center items-start min-h-[40px] text-stone-900">
-                                <span className="flex overflow-hidden justify-center items-center px-4 bg-lime-50 rounded-3xl min-h-[40px] w-[178px]">
-                                    Send Route to Phone
-                                </span>
-                            </button>
-                        </div>
+
+                    {/* Map Section */}
+                    <section className="w-full bg-white rounded-xl shadow-lg overflow-hidden">
+                        <h2 className="text-xl font-semibold text-gray-800 px-6 pt-4 pb-2">Route Map</h2>
+                        <img
+                            loading="lazy"
+                            src="/tempmap.png"
+                            alt="Waste Management Route Map"
+                            className="object-cover w-full h-[400px]"
+                        />
+                    </section>
+
+                    {/* Buttons Section */}
+                    <section className="flex gap-4 w-full justify-center">
+                        <button className="flex items-center justify-center w-[150px] px-4 py-3 bg-emerald-600 text-white rounded-full font-semibold shadow-md hover:bg-emerald-700 transition duration-150">
+                            Update Route
+                        </button>
+                        <button className="flex items-center justify-center w-[180px] px-4 py-3 bg-lime-100 text-stone-900 rounded-full font-semibold shadow-md hover:bg-lime-200 transition duration-150">
+                            Send Route to Phone
+                        </button>
                     </section>
                 </div>
             </main>

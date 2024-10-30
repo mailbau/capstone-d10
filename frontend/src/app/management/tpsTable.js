@@ -24,50 +24,28 @@ function TpsTable() {
 
     return (
         <section className="flex flex-col justify-center px-4 py-3 w-full text-sm min-h-[432px]">
-            <div className="flex overflow-hidden flex-col w-full bg-white rounded-xl border border-solid border-stone-300 min-h-[408px]">
-                <div className="flex flex-col w-full min-h-[406px]">
-                    <header className="flex flex-col w-full font-medium text-stone-900 max-md:max-w-full">
-                        <div className="flex flex-wrap items-start w-full bg-white min-h-[46px]">
-                            <div className="flex flex-col grow shrink justify-center px-4 py-3.5 min-h-[46px] w-[220px]"> {/* Increased width */}
-                                <span className="max-w-full min-h-[21px] w-[215px]">Name</span>
+            <div className="flex overflow-hidden flex-col w-full bg-white rounded-xl border border-solid border-gray-300 shadow-sm">
+                <header className="flex items-center w-full bg-gray-100 font-medium text-gray-800 py-4 px-6 border-b border-gray-300">
+                    <div className="w-1/4">Name</div>
+                    <div className="w-1/2">Address</div>
+                    <div className="w-1/6">Google Maps</div>
+                    <div className="w-1/6">Capacity</div>
+                    <div className="w-1/6">Last Emptied</div>
+                </header>
+                <div className="flex flex-col w-full text-gray-700">
+                    {tpsData.map((tps) => (
+                        <div key={tps.id} className="flex items-center w-full px-6 py-4 border-b border-gray-200 hover:bg-gray-50">
+                            <div className="w-1/4 truncate" title={tps.name}>{tps.name}</div>
+                            <div className="w-1/2 truncate" title={tps.address}>{tps.address}</div>
+                            <div className="w-1/6 text-blue-600">
+                                <a href={tps.gmapsLink} target="_blank" rel="noopener noreferrer" className="underline">
+                                    View on Maps
+                                </a>
                             </div>
-                            <div className="flex flex-col grow shrink justify-center px-4 py-3.5 min-h-[46px] w-[420px]"> {/* Increased width */}
-                                <span className="max-w-full min-h-[21px] w-[410px]">Address</span>
-                            </div>
-                            <div className="flex flex-col grow shrink justify-center items-center px-4 py-3.5 whitespace-nowrap min-h-[46px] w-[200px]"> {/* Increased width */}
-                                <span className="max-w-full min-h-[21px] w-[195px]">Google Maps</span>
-                            </div>
-                            <div className="flex flex-col grow shrink justify-center items-center px-4 py-3.5 whitespace-nowrap min-h-[46px] w-[200px]"> {/* New column */}
-                                <span className="max-w-full min-h-[21px] w-[195px]">Capacity</span>
-                            </div>
-                            <div className="flex flex-col grow shrink justify-center items-center px-4 py-3.5 whitespace-nowrap min-h-[46px] w-[200px]"> {/* New column */}
-                                <span className="max-w-full min-h-[21px] w-[195px]">Last Emptied</span>
-                            </div>
+                            <div className="w-1/6">{tps.capacity || 'Default Capacity'}</div>
+                            <div className="w-1/6">{tps.lastEmptied || 'Default Last Emptied'}</div>
                         </div>
-                    </header>
-                    <div className="flex flex-col w-full max-w-full min-h-[360px] text-stone-500 max-md:max-w-full">
-                        {tpsData.map((tps) => (
-                            <div key={tps.id} className="flex flex-wrap items-start w-full border-t border-gray-200 min-h-[72px]">
-                                <div className="flex flex-col grow shrink justify-center items-center px-4 py-7 min-h-[72px] text-stone-900 w-[220px]"> {/* Adjusted for consistency */}
-                                    <span className="max-w-full min-h-[21px] w-[215px]">{tps.name}</span>
-                                </div>
-                                <div className="flex flex-col grow shrink justify-center items-center px-4 py-7 min-h-[72px] w-[420px]"> {/* Adjusted for consistency */}
-                                    <span className="max-w-full min-h-[21px] w-[410px]" title={tps.address}>{tps.address}</span>
-                                </div>
-                                <div className="flex flex-col grow shrink justify-center items-start px-4 py-7 whitespace-nowrap min-h-[72px] w-[169px]">
-                                    <a href={tps.gmapsLink} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
-                                        View on Maps
-                                    </a>
-                                </div>
-                                <div className="flex flex-col grow shrink justify-center items-center px-4 py-7 whitespace-nowrap min-h-[72px] w-[200px]"> {/* New column */}
-                                    <span className="max-w-full min-h-[21px] w-[195px]">Default Capacity</span>
-                                </div>
-                                <div className="flex flex-col grow shrink justify-center items-center px-4 py-7 whitespace-nowrap min-h-[72px] w-[200px]"> {/* New column */}
-                                    <span className="max-w-full min-h-[21px] w-[195px]">Default Last Emptied</span>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                    ))}
                 </div>
             </div>
         </section>

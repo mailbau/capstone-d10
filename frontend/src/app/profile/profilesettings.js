@@ -35,7 +35,7 @@ function ProfileSettings() {
                     { label: 'First Name', value: data.first_name },
                     { label: 'Last Name', value: data.last_name },
                     { label: 'Email', value: data.user_email },
-                    { label: 'Password', value: '', type: 'password' }, // Set an empty string for password
+                    { label: 'Password', value: '', type: 'password' },
                 ]);
             } else {
                 console.error('Failed to fetch user data');
@@ -47,7 +47,6 @@ function ProfileSettings() {
 
     const handleSaveChanges = async (e) => {
         e.preventDefault();
-        console.log('inputFields:', inputFields);
 
         const updatedData = {
             first_name: inputFields.find(field => field.label === 'First Name').value,
@@ -56,13 +55,9 @@ function ProfileSettings() {
             user_password: inputFields.find(field => field.label === 'Password').value
         };
 
-
-        console.log('Updated data:', updatedData);
-
         const userId = jwtDecode(token).userId;
 
         try {
-            console.log('Updating user data...');
             const response = await fetch(`http://localhost:8080/user/${userId}`, {
                 method: 'PUT',
                 headers: {
@@ -74,7 +69,7 @@ function ProfileSettings() {
 
             if (response.ok) {
                 setIsEditing(false);
-                fetchUserData(userId, token); // Refresh data
+                fetchUserData(userId, token);
             } else {
                 console.error('Failed to update user data');
             }
@@ -88,13 +83,13 @@ function ProfileSettings() {
     };
 
     return (
-        <section className="flex overflow-hidden flex-col items-center w-full max-w-[960px] min-h-[695px] min-w-[240px] p-6">
-            <div className="flex flex-col items-center w-full p-4">
-                <h2 className="text-4xl font-bold tracking-tighter text-stone-900">Profile Settings</h2>
-                <p className="mt-3 text-base text-stone-500">Update your personal details</p>
+        <section className="flex flex-col items-center w-full max-w-2xl p-6 space-y-6 bg-white rounded-lg shadow-lg">
+            <div className="flex flex-col items-center w-full mb-6">
+                <h2 className="text-3xl font-bold text-gray-800">Profile Settings</h2>
+                <p className="mt-2 text-gray-500">Update your personal details</p>
             </div>
             {userData && (
-                <form onSubmit={handleSaveChanges} className="px-4 w-full max-w-md">
+                <form onSubmit={handleSaveChanges} className="flex flex-col items-center w-full space-y-4">
                     {inputFields.map((field, index) => (
                         <InputField
                             key={index}
@@ -110,18 +105,18 @@ function ProfileSettings() {
                             }}
                         />
                     ))}
-                    <div className="flex justify-center items-center py-3 w-full">
+                    <div className="flex justify-center space-x-4 mt-4">
                         <button
                             type="button"
                             onClick={toggleEditMode}
-                            className="px-5 py-3 bg-blue-600 rounded-3xl text-white font-bold max-w-[480px] mx-2"
+                            className="px-5 py-2 bg-blue-500 text-white rounded-full font-semibold hover:bg-blue-600 transition-colors"
                         >
                             {isEditing ? 'Cancel' : 'Edit'}
                         </button>
                         {isEditing && (
                             <button
                                 type="submit"
-                                className="px-5 py-3 bg-emerald-600 rounded-3xl text-white font-bold max-w-[480px] mx-2"
+                                className="px-5 py-2 bg-green-500 text-white rounded-full font-semibold hover:bg-green-600 transition-colors"
                             >
                                 Save Changes
                             </button>

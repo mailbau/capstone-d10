@@ -35,7 +35,10 @@ function RegisterForm() {
             if (response.ok) {
                 setSuccess(data.message || 'Registration successful!');
                 setError('');
-                // Optionally, redirect or reset form fields here
+                setFirstName('');
+                setLastName('');
+                setEmail('');
+                setPassword('');
             } else {
                 setError(data.error || 'Registration failed. Please try again.');
                 setSuccess('');
@@ -47,20 +50,24 @@ function RegisterForm() {
     };
 
     return (
-        <div className="flex justify-center items-center min-h-screen">
-            <div className="flex flex-col pt-5 pb-32 min-h-[632px] min-w-[240px] w-[512px] bg-white rounded-xl max-md:pb-24"> {/* Add shadow and rounded corners */}
-                <h2 className="flex flex-col justify-center items-start p-4 w-full text-3xl font-bold tracking-tighter leading-none text-black whitespace-nowrap">
-                    Register
+        <div className="flex justify-center items-center w-full">
+            <div className="flex flex-col w-full max-w-md bg-white rounded-2xl shadow-lg p-8 space-y-6">
+                <h2 className="text-3xl font-bold text-center text-gray-800">
+                    Create an Account
                 </h2>
-                <form onSubmit={handleSubmit}>
-                    <div className="flex flex-col px-4 py-3 w-full text-base">
-                        <label htmlFor="firstName" className="pb-2 w-full font-medium text-stone-900">
+                <p className="text-gray-600 text-center">
+                    Join us and start managing waste efficiently
+                </p>
+
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="flex flex-col">
+                        <label htmlFor="firstName" className="text-gray-700 font-medium mb-1">
                             First Name
                         </label>
                         <input
                             type="text"
                             id="firstName"
-                            className="p-4 bg-lime-50 rounded-xl w-full min-h-[56px]"
+                            className="p-3 bg-gray-100 rounded-lg border border-gray-300 focus:border-emerald-500 focus:ring-emerald-500 outline-none transition"
                             placeholder="Enter your first name"
                             value={firstName}
                             onChange={(e) => setFirstName(e.target.value)}
@@ -68,14 +75,14 @@ function RegisterForm() {
                         />
                     </div>
 
-                    <div className="flex flex-col px-4 py-3 w-full text-base">
-                        <label htmlFor="lastName" className="pb-2 w-full font-medium text-stone-900">
+                    <div className="flex flex-col">
+                        <label htmlFor="lastName" className="text-gray-700 font-medium mb-1">
                             Last Name
                         </label>
                         <input
                             type="text"
                             id="lastName"
-                            className="p-4 bg-lime-50 rounded-xl w-full min-h-[56px]"
+                            className="p-3 bg-gray-100 rounded-lg border border-gray-300 focus:border-emerald-500 focus:ring-emerald-500 outline-none transition"
                             placeholder="Enter your last name"
                             value={lastName}
                             onChange={(e) => setLastName(e.target.value)}
@@ -83,14 +90,14 @@ function RegisterForm() {
                         />
                     </div>
 
-                    <div className="flex flex-col px-4 py-3 w-full text-base">
-                        <label htmlFor="email" className="pb-2 w-full font-medium text-stone-900">
+                    <div className="flex flex-col">
+                        <label htmlFor="email" className="text-gray-700 font-medium mb-1">
                             Email
                         </label>
                         <input
                             type="email"
                             id="email"
-                            className="p-4 bg-lime-50 rounded-xl w-full min-h-[56px]"
+                            className="p-3 bg-gray-100 rounded-lg border border-gray-300 focus:border-emerald-500 focus:ring-emerald-500 outline-none transition"
                             placeholder="Enter your email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -98,14 +105,14 @@ function RegisterForm() {
                         />
                     </div>
 
-                    <div className="flex flex-col px-4 py-3 w-full text-base">
-                        <label htmlFor="password" className="pb-2 w-full font-medium text-stone-900">
+                    <div className="flex flex-col">
+                        <label htmlFor="password" className="text-gray-700 font-medium mb-1">
                             Password
                         </label>
                         <input
                             type="password"
                             id="password"
-                            className="p-4 bg-lime-50 rounded-xl w-full min-h-[56px]"
+                            className="p-3 bg-gray-100 rounded-lg border border-gray-300 focus:border-emerald-500 focus:ring-emerald-500 outline-none transition"
                             placeholder="Enter your password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
@@ -113,23 +120,21 @@ function RegisterForm() {
                         />
                     </div>
 
-                    <div className="px-4 py-3 w-full">
-                        <button
-                            type="submit"
-                            className="w-full px-5 py-3 bg-emerald-600 text-white font-bold rounded-3xl"
-                        >
-                            Register
-                        </button>
-                    </div>
+                    <button
+                        type="submit"
+                        className="w-full py-3 bg-emerald-600 text-white font-bold rounded-full shadow-md hover:bg-emerald-700 transition"
+                    >
+                        Register
+                    </button>
                 </form>
 
-                {error && <p className="text-red-500 text-center">{error}</p>}
-                {success && <p className="text-green-500 text-center">{success}</p>}
+                {error && <p className="text-red-500 text-center mt-2">{error}</p>}
+                {success && <p className="text-green-500 text-center mt-2">{success}</p>}
 
-                <div className="flex justify-center items-center w-full py-4">
-                    <p className="text-base text-gray-600">
+                <div className="text-center">
+                    <p className="text-gray-600">
                         Already have an account?{' '}
-                        <Link href="/login" className="text-blue-600 font-bold hover:underline">
+                        <Link href="/login" className="text-blue-600 font-semibold hover:underline">
                             Login
                         </Link>
                     </p>
