@@ -13,10 +13,12 @@ function DashboardPage() {
                     <InfoCard
                         title="Total Distance"
                         description="The total distance of the optimal garbage collection route is 50 miles."
+                        link={"/totaldistance"}
                     />
                     <InfoCard
                         title="Emission Information"
                         description="The emission information for the optimal garbage collection route is 5 tons of CO2."
+                        link={"/emission"}
                     />
                     {/* Map */}
                     <section className="flex items-start px-4 py-3 max-w-full min-h-[546px] w-[960px]">

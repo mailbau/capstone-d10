@@ -90,7 +90,7 @@ function ProfileSettings() {
     return (
         <section className="flex overflow-hidden flex-col items-center w-full max-w-[960px] min-h-[695px] min-w-[240px] p-6">
             <div className="flex flex-col items-center w-full p-4">
-                <h2 className="text-4xl font-extrabold tracking-tighter text-stone-900">Profile Settings</h2>
+                <h2 className="text-4xl font-bold tracking-tighter text-stone-900">Profile Settings</h2>
                 <p className="mt-3 text-base text-stone-500">Update your personal details</p>
             </div>
             {userData && (

@@ -1,6 +1,17 @@
-import React from 'react';
+"use client";
 
-function InfoCard({ title, description }) {
+import React from 'react';
+import { useRouter } from 'next/navigation';
+
+function InfoCard({ title, description, link }) {
+    const router = useRouter();
+
+    const handleMoreInfoClick = () => {
+        if (link) {
+            router.push(link);
+        }
+    };
+
     return (
         <section className="flex flex-col justify-center p-4 w-full max-w-[960px] min-h-[122px] max-md:max-w-full">
             <div className="flex flex-wrap gap-10 justify-between items-center px-5 py-5 w-full bg-white rounded-xl border border-solid border-stone-300 max-w-[928px] min-h-[90px] max-md:max-w-full">
@@ -12,7 +23,9 @@ function InfoCard({ title, description }) {
                         {description}
                     </p>
                 </div>
-                <button className="flex items-start self-stretch my-auto text-sm font-medium text-white min-h-[32px] w-[95px]">
+                <button
+                    onClick={handleMoreInfoClick}
+                    className="flex items-start self-stretch my-auto text-sm font-medium text-white min-h-[32px] w-[95px]">
                     <span className="flex overflow-hidden justify-center items-center px-4 bg-emerald-600 rounded-2xl min-h-[32px] w-[95px]">
                         More Info
                     </span>
