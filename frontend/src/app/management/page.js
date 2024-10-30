@@ -3,15 +3,16 @@ import Header from '../../components/header';
 import InfoCard from '../../components/infocard';
 import TpsTable from './tpsTable';
 import Footer from '../../components/footer';
+import WithAuth from '@/components/withAuth';
 
 function Management() {
     return (
-        <div className="flex overflow-hidden flex-col bg-white">
+        <div className="flex flex-col min-h-screen bg-gray-50">
             <Header />
-            <main className="flex justify-center items-start px-40 py-5 w-full min-h-[931px] max-md:px-5 max-md:max-w-full">
-                <div className="flex flex-col min-h-[891px] min-w-[240px] w-full max-md:max-w-full"> {/* Adjusted width */}
+            <main className="flex flex-col items-center w-full px-4 md:px-10 py-5">
+                <div className="w-full max-w-5xl space-y-6">
                     {/* Centered Info Cards */}
-                    <div className="flex flex-col items-center mb-4"> {/* Added flex container for centering */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <InfoCard
                             title="Total Distance"
                             description="The total distance of the optimal garbage collection route is 50 miles."
