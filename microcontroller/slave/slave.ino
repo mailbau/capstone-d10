@@ -37,11 +37,11 @@ const char *ssid = "Joho";
 const char *password = "joanda1234";
 const char *serverUrl = "https://smart-bin-capstone-d10-default-rtdb.asia-southeast1.firebasedatabase.app/logv3.json"; // Firebase project ID
 
+bool sendHttp = false;
+int idToSend[2];
+
 void sendRequest(const char *url, String tpsId, int wallId, int sensorId, int filled)
 {
-
-  // connectWifi();
-
   // Get the current Unix time (seconds since Jan 1, 1970)
   time_t now = time(nullptr);
   // Round to the previous minute
@@ -53,12 +53,14 @@ void sendRequest(const char *url, String tpsId, int wallId, int sensorId, int fi
   // Create an HTTPClient instance
   HTTPClient http;
 
+  http.setTimeout(1000000);
+
   // Specify the URL and begin the connection
   http.begin(url);
 
   // Specify the content type and send the PUT request
   http.addHeader("Content-Type", "application/json");
-  int httpResponseCode = http.PUT(jsonData);
+  int httpResponseCode = http.PATCH(jsonData);
 
   // Check the response code and print the result
   if (httpResponseCode > 0)
@@ -74,13 +76,12 @@ void sendRequest(const char *url, String tpsId, int wallId, int sensorId, int fi
   else
   {
     Serial.print("Error on sending PATCH: ");
-    Serial.println(httpResponseCode);
+    Serial.println(http.errorToString(httpResponseCode).c_str());
   }
 
   // Free resources
   http.end();
 
-  // disconnectWifi();
 }
 
 // callback function that will be executed when data is received
@@ -93,27 +94,19 @@ void OnDataRecv(const uint8_t *mac_addr, const uint8_t *incomingData, int len)
   Serial.println(macStr);
   memcpy(&myData, incomingData, sizeof(myData));
 
-  // Update the structures with the new incoming data
-  memcpy(boardsStruct[myData[0].id - 1].sensor, myData[0].sensor, sizeof(myData[0].sensor));
-  memcpy(boardsStruct[myData[1].id - 1].sensor, myData[1].sensor, sizeof(myData[1].sensor));
-
-  boardsStruct[myData[0].id - 1].id = myData[0].id;
-  boardsStruct[myData[1].id - 1].id = myData[1].id;
-
-  int ids[2] = {myData[0].id - 1, myData[1].id - 1};
-
-  Serial.printf("Board ID %u: \n", myData[0].id);
-  for (int i = 0; i < sizeof(boardsStruct[myData[0].id - 1].sensor) / sizeof(boardsStruct[myData[0].id - 1].sensor[0]); i++)
-  {
-    Serial.printf("Sensor %d value: %d\n", i, boardsStruct[myData[0].id - 1].sensor[i]);
-  }
-  Serial.printf("Board ID %u: \n", myData[1].id);
-  for (int i = 0; i < sizeof(boardsStruct[myData[0].id - 1].sensor) / sizeof(boardsStruct[myData[0].id - 1].sensor[0]); i++)
-  {
-    Serial.printf("Sensor %d value: %d\n", i, boardsStruct[myData[1].id - 1].sensor[i]);
-  }
-  Serial.println();
-
+  // Update the structures with the new incoming data  
+  for (int i = 0; i < 2; i++) {
+    memcpy(boardsStruct[myData[i].id-1].sensor, myData[i].sensor, sizeof(myData[i].sensor));
+    boardsStruct[myData[i].id-1].id = myData[i].id;
+    idToSend[i] = myData[i].id-1;
+    Serial.printf("Board ID %u: \n", myData[i].id);
+    for (int j = 0; j < sizeof(boardsStruct[myData[i].id - 1].sensor) / sizeof(boardsStruct[myData[i].id - 1].sensor[i]); j++)
+    {
+      Serial.printf("Sensor %d value: %d\n", j, boardsStruct[myData[i].id - 1].sensor[j]);
+    }
+    Serial.println();
+  } 
+  
   wallData.tpsId = 1;
   Serial.printf("TPS:\ntpsId: %d\n", wallData.tpsId);
   for (int i = 0; i < 2; i++)
@@ -143,24 +136,11 @@ void OnDataRecv(const uint8_t *mac_addr, const uint8_t *incomingData, int len)
         }
       }
       Serial.printf("Wall Status for wall %d at sensor %d: %d\n", boardsStruct[ids[i]].id, j, wallData.wallStatus[i].filled[j]);
-      // sendRequest(serverUrl, String(wallData.tpsId), boardsStruct[ids[i]].id, j, wallData.wallStatus[i].filled[j]);
     }
   }
+  sendHttp = true;
 }
 
-int32_t getWifiChannel(const char *ssid)
-{
-  if (int32_t n = WiFi.scanNetworks())
-  {
-    for (int32_t i = 0; i < n; i++)
-    {
-      if (!strcmp(ssid, WiFi.SSID(i).c_str()))
-      {
-        return WiFi.channel(i);
-      }
-    }
-  }
-}
 
 void connectWifi()
 {
@@ -186,9 +166,6 @@ void setup()
   delay(1000);
 
   WiFi.mode(WIFI_STA);
-
-  // wifi_config_t wifi_config;
-  // wifi_config.ap.channel =
 
   int channel = WiFi.channel();
 
@@ -231,5 +208,13 @@ void setup()
 
 void loop()
 {
+  if (sendHttp) {
+    for (int i = 0; i < 2; i++) {
+      for (int j = 0; j < 4; j++) {
+        sendRequest(url, String(wallData.tpsId), boardsStruct[idToSend[i]].id, j, wallData.wallStatus[i].filled[j]);
+      }
+    sendHttp = false;
+    }
+  }
   delay(1000);
 }
