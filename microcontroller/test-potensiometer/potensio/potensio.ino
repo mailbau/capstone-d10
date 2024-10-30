@@ -5,24 +5,25 @@
 // WiFi and Firebase credentials
 const char *ssid = "Joho";
 const char *password = "joanda1234";
-const char *serverUrl = "https://smart-bin-capstone-d10-default-rtdb.asia-southeast1.firebasedatabase.app/logv3.json"; // Firebase project ID
+const char *serverUrl = "https://smart-bin-capstone-d10-default-rtdb.asia-southeast1.firebasedatabase.app/logv4.json"; // Firebase project ID
 
-const int potensiometerPins[] = {35, 32, 33, 25, 26, 27, 14, 12, 13}; // ADC pins for potentiometers
-const int ledPins[] = {23, 22, 21, 19, 18, 5, 4, 2, 15};              // PWM pins for LEDs
+const int potensiometerPins[9] = {35, 32, 33, 25, 26, 27, 14, 12, 13}; // ADC pins for potentiometers
+const int myLedPins[9] = {23, 22, 21, 19, 18, 5, 4, 2, 15};              // PWM pins for LEDs
 const int numPins = 9;                                                // Number of potentiometers and LEDs
 
 int tpsPercentage[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0}; // Array to store the percentage of each potentiometer
 
 
-void sendRequest(const char *url, String tpsId, int percentage)
+void sendRequest(const char *url, String tpsId, float percentage)
 {
   // Get the current Unix time (seconds since Jan 1, 1970)
   time_t now = time(nullptr);
-  // Round to the previous minute
-  now = now - (now % 60);
+
+  now = now - (now % 5);
 
   // Construct the JSON data with the specified structure
-  String jsonData = "{" + tpsId + "/" + String(now) + "/percentage\": " + String(percentage) + "}";
+  String jsonData = "{\"" + tpsId + "/" + String(now) + "/percentage\": \"" + String(percentage, 2) + "\"}";
+
 
   // Create an HTTPClient instance
   HTTPClient http;
@@ -78,7 +79,7 @@ void setup()
 
     for (int i = 0; i < numPins; i++)
     {
-        pinMode(ledPins[i], OUTPUT); // Set LED pins as output
+        pinMode(myLedPins[i], OUTPUT); // Set LED pins as output
     }
 }
 
@@ -96,7 +97,7 @@ void loop()
         float dutyCyclePercentage = (voltageValue / 4095.0) * 100;
 
         // Set LED brightness using PWM
-        analogWrite(ledPins[i], dutyCycle);
+        analogWrite(myLedPins[i], dutyCycle);
 
         // Print the values to the Serial Monitor
         Serial.print("Potentiometer ");
@@ -104,11 +105,11 @@ void loop()
         Serial.print(" (Pin ");
         Serial.print(potensiometerPins[i]);
         Serial.print("): ");
-        Serial.print(nilaiTegangan);
+        Serial.print(voltageValue);
         Serial.print(" -> LED ");
         Serial.print(i);
         Serial.print(" (Pin ");
-        Serial.print(ledPins[i]);
+        Serial.print(myLedPins[i]);
         Serial.print("): Duty Cycle = ");
         Serial.print(dutyCyclePercentage, 2);
         Serial.println("%");
@@ -117,5 +118,5 @@ void loop()
         sendRequest(serverUrl, tpsId, dutyCyclePercentage);
     }
 
-    delay(500); // Delay to reduce the number of serial prints
+    delay(4000); // Delay to reduce the number of serial prints
 }
