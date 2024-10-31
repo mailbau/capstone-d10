@@ -105,8 +105,8 @@ function Header() {
                             >
                                 <ul className="text-sm text-gray-700">
                                     <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => router.push('/profile')}>Profile</li>
-                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Settings</li>
-                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Help</li>
+                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => router.push('/settings')}>Settings</li>
+                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => router.push('/help')}>Help</li>
                                     <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-600" onClick={handleLogOut}>Log Out</li>
                                 </ul>
                             </div>

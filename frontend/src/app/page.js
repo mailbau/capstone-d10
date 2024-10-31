@@ -44,21 +44,21 @@ export default function Home() {
         <h2 className="text-3xl font-bold text-gray-800 mb-8">Why Choose Us?</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl">
           <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-md">
-            <img src="/feature-route.svg" alt="Route Optimization" className="w-16 h-16 mb-4" />
+            <img src="/map.jpg" alt="Route Optimization" className="w-30 h-16 mb-4" />
             <h3 className="text-xl font-semibold text-gray-700">Route Optimization</h3>
             <p className="text-gray-600 mt-2 text-center">
               Plan the most efficient routes to reduce travel distance, saving time and fuel.
             </p>
           </div>
           <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-md">
-            <img src="/feature-emission.svg" alt="Emission Tracking" className="w-16 h-16 mb-4" />
+            <img src="/emission.png" alt="Emission Tracking" className="w-30 h-16 mb-4" />
             <h3 className="text-xl font-semibold text-gray-700">Emission Tracking</h3>
             <p className="text-gray-600 mt-2 text-center">
               Monitor emissions and make eco-friendly choices to reduce your carbon footprint.
             </p>
           </div>
           <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-md">
-            <img src="/feature-data.svg" alt="Data Insights" className="w-16 h-16 mb-4" />
+            <img src="/data.jpg" alt="Data Insights" className="w-18 h-16 mb-4" />
             <h3 className="text-xl font-semibold text-gray-700">Data Insights</h3>
             <p className="text-gray-600 mt-2 text-center">
               Get actionable insights with detailed reports to improve waste management strategies.
