@@ -17,7 +17,7 @@ const pathController = {
     // Add new path
     addPath: async (req, res) => {
         try {
-            const { initialTPS, endTPS, distance } = req.body;
+            const { pathName, initialTPS, endTPS, distance } = req.body;
 
             // Check if both initialTPS and endTPS exist in the TPS collection
             const initialTPSSnapshot = await db.ref(`/tps/${initialTPS}`).get();
@@ -29,6 +29,7 @@ const pathController = {
 
             // Create a new path object
             const newPath = {
+                pathName,
                 initialTPS,  // Foreign key to initial TPS
                 endTPS,      // Foreign key to end TPS
                 distance     // Distance between the TPS locations
