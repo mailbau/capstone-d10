@@ -9,7 +9,7 @@ const tpsRouter = require('./routers/tpsRouter');
 const pathRouter = require('./routers/pathRouter');
 const sensorRouter = require('./routers/sensorRouter');
 const authRouter = require('./routers/authRouter');
-const authenticateJWT = require('./middleware/authMiddleware');
+const tpsStatusRouter = require('./routers/tpsStatusRouter');
 
 const app = express();
 
@@ -34,6 +34,7 @@ app.use('/user', userRouter);
 app.use('/tps', tpsRouter);
 app.use('/path', pathRouter);
 app.use('/sensor', sensorRouter);
+app.use('/tpsstatus', tpsStatusRouter);
 
 // Set the port from environment variables or use 8080
 const PORT = process.env.PORT || 8080;
