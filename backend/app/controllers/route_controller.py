@@ -25,8 +25,8 @@ def fetch_paths():
     response = requests.get("http://localhost:8080/path")
     return response.json()
 
-# A* route optimization to visit all nodes (bins)
-def calculate_optimal_route(tps_data, tps_status, paths_data):
+# A* route optimization with capacity-based unloading added to path list
+def calculate_optimal_route(tps_data, tps_status, paths_data, vehicle_capacity=8):
     G = nx.Graph()
 
     # Build the graph with provided path data
@@ -40,59 +40,104 @@ def calculate_optimal_route(tps_data, tps_status, paths_data):
 
     # Iterate through all permutations of mandatory stops
     for perm in permutations(mandatory_stops):
-        current_route = [GARAGE_ID] + list(perm) + [DESTINATION_ID]
+        current_route = [GARAGE_ID]
+        path_list = []
         current_distance = 0
         current_load = 0
-        valid_route = True
+        unvisited_nodes = list(perm)  # Initialize unvisited nodes queue
 
-        # Calculate the total distance for this route
+        while unvisited_nodes:
+            node = unvisited_nodes.pop(0)  # Visit next node in the queue
+
+            if node in tps_status:
+                # Calculate the load from this node
+                added_load = int(tps_data[node]['capacity'] * tps_status[node]['status'])
+                current_load += added_load
+
+            # Check if the vehicle has reached or exceeded capacity
+            if current_load >= vehicle_capacity:
+                # Detour to the destination to unload
+                last_node = current_route[-1]  # Node before going to the destination
+                path_to_dest = nx.shortest_path(G, source=last_node, target=DESTINATION_ID, weight='weight')
+                
+                # Add segments in the route to the destination
+                for i in range(len(path_to_dest) - 1):
+                    initial, end = path_to_dest[i], path_to_dest[i + 1]
+                    distance = G[initial][end]['weight']
+                    path_id = next((pid for pid, pdata in paths_data.items() if pdata['initialTPS'] == initial and pdata['endTPS'] == end), None)
+                    path_list.append({
+                        "pathId": path_id,
+                        "initialTPS": initial,
+                        "endTPS": end,
+                        "distance": distance,
+                        "pathName": paths_data[path_id]['pathName'] if path_id else "Unknown"
+                    })
+                    current_distance += distance
+
+                # Reset load and update current route
+                current_load = 0  # Unload completely at destination
+                current_route.append(DESTINATION_ID)
+
+                # After unloading, determine next node to visit
+                if unvisited_nodes:
+                    # Shortest path from destination to the next unvisited node
+                    next_node = unvisited_nodes[0]
+                    path_from_dest = nx.shortest_path(G, source=DESTINATION_ID, target=next_node, weight='weight')
+
+                    # Add segments from destination to next node
+                    for i in range(len(path_from_dest) - 1):
+                        initial, end = path_from_dest[i], path_from_dest[i + 1]
+                        distance = G[initial][end]['weight']
+                        path_id = next((pid for pid, pdata in paths_data.items() if pdata['initialTPS'] == initial and pdata['endTPS'] == end), None)
+                        path_list.append({
+                            "pathId": path_id,
+                            "initialTPS": initial,
+                            "endTPS": end,
+                            "distance": distance,
+                            "pathName": paths_data[path_id]['pathName'] if path_id else "Unknown"
+                        })
+                        current_distance += distance
+
+                    # Update current route to include the path from destination to the next node
+                    current_route.extend(path_from_dest[1:])  # Skip adding destination itself twice
+                continue  # Skip to next node in the while loop
+
+            # If under capacity, add node to route normally
+            if current_route[-1] != node:  
+                current_route.append(node)
+
+        # Finally, add the destination to complete the route
+        current_route.append(DESTINATION_ID)
+
+        # Calculate paths and distances for the completed route
         for i in range(len(current_route) - 1):
-            start, end = current_route[i], current_route[i + 1]
-
-            # Add load if the node is a bin
-            if start in tps_status:
-                current_load += int(tps_data[start]['capacity'] * tps_status[start]['status'])
-
-            # Check capacity constraint
-            if current_load > 10:  # Vehicle capacity
-                valid_route = False
-                break
-
-            # Calculate path length
-            if G.has_edge(start, end):
-                current_distance += G[start][end]['weight']
-            else:
-                valid_route = False
-                break
-
-        # Update the best route if the current one is valid and shorter
-        if valid_route and current_distance < best_distance:
-            best_route = current_route
-            best_distance = current_distance
-
-    # Prepare output format
-    if best_route is None:
-        return None, None  # No valid route found
-
-    optimal_path_list = []
-    for i in range(len(best_route) - 1):
-        initial, end = best_route[i], best_route[i + 1]
-        # Find the path ID that connects these two nodes
-        for path_id, path in paths_data.items():
-            if path['initialTPS'] == initial and path['endTPS'] == end:
-                optimal_path_list.append({
+            initial, end = current_route[i], current_route[i + 1]
+            if G.has_edge(initial, end):
+                distance = G[initial][end]['weight']
+                path_id = next((pid for pid, pdata in paths_data.items() if pdata['initialTPS'] == initial and pdata['endTPS'] == end), None)
+                path_list.append({
                     "pathId": path_id,
                     "initialTPS": initial,
                     "endTPS": end,
-                    "distance": path['distance'],
-                    "pathName": path['pathName']
+                    "distance": distance,
+                    "pathName": paths_data[path_id]['pathName'] if path_id else "Unknown"
                 })
+                current_distance += distance
+            else:
+                path_list = None
                 break
 
-    # Calculate total capacity used based on best route
-    total_capacity = sum(tps_data[node]['capacity'] for node in best_route if node in tps_data)
+        # Update best route if the current one is valid and shorter
+        if path_list and current_distance < best_distance:
+            best_route = current_route
+            best_distance = current_distance
 
-    return optimal_path_list, best_distance, total_capacity
+    if best_route is None:
+        return None, None, None
+
+    total_capacity = sum(tps_data[node]['capacity'] for node in best_route if node in tps_data)
+    return path_list, best_distance, total_capacity
+
 
 # Calculate and save the optimal route
 @route_controller.route('/calculate_route', methods=['POST'])
