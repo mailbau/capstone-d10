@@ -1,5 +1,5 @@
 from flask import Blueprint
-from app.controllers.route_controller import get_all_routes, add_route, get_route_by_id, update_route, delete_route
+from app.controllers.route_controller import get_all_routes, add_route, get_route_by_id, update_route, delete_route, calculate_route
 
 # Create a Blueprint for route routes
 route_routes = Blueprint('route_routes', __name__)
@@ -18,3 +18,6 @@ route_routes.route('/<string:route_id>', methods=['PUT'])(update_route)
 
 # Delete route by ID
 route_routes.route('/<string:route_id>', methods=['DELETE'])(delete_route)
+
+# Calculate and add the optimal route
+route_routes.route('/calculate_route', methods=['POST'])(calculate_route)
