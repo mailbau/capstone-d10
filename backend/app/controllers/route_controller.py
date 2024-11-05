@@ -6,6 +6,8 @@ import numpy as np
 import networkx as nx
 import heapq
 
+from app.algorithm.astar import AStarAlgorithm
+
 route_controller = Blueprint('route_controller', __name__)
 
 # Firebase id for garage and destination
@@ -25,118 +27,39 @@ def fetch_paths():
     response = requests.get("http://localhost:8080/path")
     return response.json()
 
-# A* route optimization with capacity-based unloading added to path list
-def calculate_optimal_route(tps_data, tps_status, paths_data, vehicle_capacity=8):
-    G = nx.Graph()
 
-    # Build the graph with provided path data
-    for path_id, path in paths_data.items():
-        G.add_edge(path['initialTPS'], path['endTPS'], weight=path['distance'])
-
-    # Define mandatory stops: all bins except Garage and Destination
-    mandatory_stops = [node for node in tps_data.keys() if node not in {GARAGE_ID, DESTINATION_ID}]
-    best_route = None
-    best_distance = float('inf')
-
-    # Iterate through all permutations of mandatory stops
-    for perm in permutations(mandatory_stops):
-        current_route = [GARAGE_ID]
-        path_list = []
-        current_distance = 0
-        current_load = 0
-        unvisited_nodes = list(perm)  # Initialize unvisited nodes queue
-
-        while unvisited_nodes:
-            node = unvisited_nodes.pop(0)  # Visit next node in the queue
-
-            if node in tps_status:
-                # Calculate the load from this node
-                added_load = int(tps_data[node]['capacity'] * tps_status[node]['status'])
-                current_load += added_load
-
-            # Check if the vehicle has reached or exceeded capacity
-            if current_load >= vehicle_capacity:
-                # Detour to the destination to unload
-                last_node = current_route[-1]  # Node before going to the destination
-                path_to_dest = nx.shortest_path(G, source=last_node, target=DESTINATION_ID, weight='weight')
-                
-                # Add segments in the route to the destination
-                for i in range(len(path_to_dest) - 1):
-                    initial, end = path_to_dest[i], path_to_dest[i + 1]
-                    distance = G[initial][end]['weight']
-                    path_id = next((pid for pid, pdata in paths_data.items() if pdata['initialTPS'] == initial and pdata['endTPS'] == end), None)
-                    path_list.append({
-                        "pathId": path_id,
-                        "initialTPS": initial,
-                        "endTPS": end,
-                        "distance": distance,
-                        "pathName": paths_data[path_id]['pathName'] if path_id else "Unknown"
-                    })
-                    current_distance += distance
-
-                # Reset load and update current route
-                current_load = 0  # Unload completely at destination
-                current_route.append(DESTINATION_ID)
-
-                # After unloading, determine next node to visit
-                if unvisited_nodes:
-                    # Shortest path from destination to the next unvisited node
-                    next_node = unvisited_nodes[0]
-                    path_from_dest = nx.shortest_path(G, source=DESTINATION_ID, target=next_node, weight='weight')
-
-                    # Add segments from destination to next node
-                    for i in range(len(path_from_dest) - 1):
-                        initial, end = path_from_dest[i], path_from_dest[i + 1]
-                        distance = G[initial][end]['weight']
-                        path_id = next((pid for pid, pdata in paths_data.items() if pdata['initialTPS'] == initial and pdata['endTPS'] == end), None)
-                        path_list.append({
-                            "pathId": path_id,
-                            "initialTPS": initial,
-                            "endTPS": end,
-                            "distance": distance,
-                            "pathName": paths_data[path_id]['pathName'] if path_id else "Unknown"
-                        })
-                        current_distance += distance
-
-                    # Update current route to include the path from destination to the next node
-                    current_route.extend(path_from_dest[1:])  # Skip adding destination itself twice
-                continue  # Skip to next node in the while loop
-
-            # If under capacity, add node to route normally
-            if current_route[-1] != node:  
-                current_route.append(node)
-
-        # Finally, add the destination to complete the route
-        current_route.append(DESTINATION_ID)
-
-        # Calculate paths and distances for the completed route
-        for i in range(len(current_route) - 1):
-            initial, end = current_route[i], current_route[i + 1]
-            if G.has_edge(initial, end):
-                distance = G[initial][end]['weight']
-                path_id = next((pid for pid, pdata in paths_data.items() if pdata['initialTPS'] == initial and pdata['endTPS'] == end), None)
-                path_list.append({
-                    "pathId": path_id,
-                    "initialTPS": initial,
-                    "endTPS": end,
-                    "distance": distance,
-                    "pathName": paths_data[path_id]['pathName'] if path_id else "Unknown"
-                })
-                current_distance += distance
-            else:
-                path_list = None
-                break
-
-        # Update best route if the current one is valid and shorter
-        if path_list and current_distance < best_distance:
-            best_route = current_route
-            best_distance = current_distance
-
-    if best_route is None:
-        return None, None, None
-
-    total_capacity = sum(tps_data[node]['capacity'] for node in best_route if node in tps_data)
-    return path_list, best_distance, total_capacity
+def convert_to_dict_format(tps_data, tps_status_data, path_data):
+    # Extracting point data
+    point_dict = []
+    tps_id_to_point_id = {}
+    point_id = 0
+    for tps_id, tps_info in tps_data.items():
+        # Find demand/status value for the tps_id or default to 0.0
+        status_entry = next((status for status in tps_status_data.values() if status['tpsId'] == tps_id), None)
+        demand_value = status_entry['status'] if status_entry else 0.0
+        
+        point_dict.append({
+            "point": point_id, 
+            "name": tps_info["name"], 
+            "coordinates": (float(tps_info["latitude"]), float(tps_info["longitude"])), 
+            "demand": demand_value
+        })
+        tps_id_to_point_id[tps_id] = point_id
+        point_id += 1
+    
+    # Extracting path data
+    path_dict = []
+    for path_id_str, path_info in path_data.items():
+        start_id = tps_id_to_point_id[path_info["initialTPS"]]
+        end_id = tps_id_to_point_id[path_info["endTPS"]]
+        path_dict.append({
+            "path_id": path_id_str, 
+            "start_id": start_id, 
+            "end_id": end_id, 
+            "distance": path_info["distance"]
+        })
+    
+    return point_dict, path_dict
 
 
 # Calculate and save the optimal route
@@ -149,23 +72,23 @@ def calculate_route():
         paths_data = fetch_paths()
 
         # Calculate optimal route
-        optimal_path_list, best_distance, total_capacity = calculate_optimal_route(tps_data, tps_status, paths_data)
+        point_dict, path_dict = convert_to_dict_format(tps_data, tps_status, paths_data)
+        max_capacity = 11.0
+        weights = (0.4, 0.4, 0.2)
+        start_point = "Dinas Lingkungan Hidup"
+        end_point = "Dinas Lingkungan Hidup"
+        a_star = AStarAlgorithm(point_dict, path_dict, max_capacity, weights, end_point)
         
-        if optimal_path_list is None:
+        optimal_path = a_star(start_point)
+        
+        if optimal_path is None:
             return jsonify({"error": "No valid route found"}), 404
 
-        # Create a new route object
-        new_route = {
-            "pathList": optimal_path_list,
-            "totalCapacity": total_capacity,
-            "totalDistance": best_distance
-        }
-
         # Save the new route to Firebase
-        new_route_ref = db.reference('/routes').push(new_route)
+        new_route_ref = db.reference('/routes').push(optimal_path)
         return jsonify({
             "message": "Optimal route calculated and added successfully",
-            "route": {**new_route, "id": new_route_ref.key}
+            "route": {**optimal_path, "id": new_route_ref.key}
         }), 201
 
     except Exception as error:
