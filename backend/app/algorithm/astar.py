@@ -169,14 +169,16 @@ class AStarAlgorithm:
     
     def __call__(self, start):
         objective_values = []
+        unused_capacity_values = []
         path_data = []
         for data in self.point_dict:
             try:
                 result = self.a_star_search(start, data['point'])
                 objective_values.append(result['objective_value'])
+                unused_capacity_values.append(result['unused_capacity'])
                 path_data.append(result)
             except Exception as _:
                 continue
-        min_objective_value = min(objective_values)
-        min_index = objective_values.index(min_objective_value)
+        min_unused_capacity_values = min(unused_capacity_values)
+        min_index = unused_capacity_values.index(min_unused_capacity_values)
         return path_data[min_index]

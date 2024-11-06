@@ -25,23 +25,26 @@ path_dict = [
     {"path_id": 5, "start_id": 5, "end_id": 6, "distance": 1.3},
     {"path_id": 6, "start_id": 6, "end_id": 7, "distance": 0.9},
     {"path_id": 7, "start_id": 7, "end_id": 8, "distance": 1.6},
-    {"path_id": 8, "start_id": 0, "end_id": 5, "distance": 2.5},
+    {"path_id": 8, "start_id": 0, "end_id": 4, "distance": 2.5},
     {"path_id": 9, "start_id": 1, "end_id": 3, "distance": 1.1},
     {"path_id": 10, "start_id": 2, "end_id": 6, "distance": 1.8},
     {"path_id": 11, "start_id": 4, "end_id": 7, "distance": 2.4},
     {"path_id": 12, "start_id": 3, "end_id": 5, "distance": 1.7},
     {"path_id": 13, "start_id": 5, "end_id": 8, "distance": 2.0},
     {"path_id": 14, "start_id": 6, "end_id": 8, "distance": 1.5},
+    {"path_id": 15, "start_id": 8, "end_id": 0, "distance": 10.5},
 ]
 
 
 class AStarAlgorithm:
-    def __init__(self, point_dict, path_dict, max_capacity, weights=(0.4, 0.3, 0.3), learning_rate=0.1):
+    def __init__(self, point_dict, path_dict, max_capacity, weights=(0.4, 0.3, 0.3), static_endpoints_name=None):
         self.points = {p['point']: p for p in point_dict}
         self.edges = defaultdict(list)
         self.max_capacity = max_capacity
         self.weights = list(weights)  # Dynamic weights
-        self.learning_rate = learning_rate  # Learning rate for weight adjustment
+        self.path_dict = path_dict
+        self.point_dict = point_dict
+        self.static_endpoints_name = static_endpoints_name
 
         # Create edges from path_dict using given distances
         for path in path_dict:
@@ -86,32 +89,6 @@ class AStarAlgorithm:
                     heapq.heappush(min_heap, (dist + edge_dist, neighbor))
         return float('inf')  # if no path exists
 
-    def adjust_weights(self, unused_capacity, occupancy_ratio, total_distance):
-        total_objective = (self.weights[0] * unused_capacity +
-                           self.weights[1] * occupancy_ratio +
-                           self.weights[2] * total_distance)
-        if total_objective == 0:
-            print("Total objective is zero, no adjustment needed.")
-            return  # Avoid division by zero
-
-        contributions = [
-            (self.weights[0] * unused_capacity) / total_objective,
-            (self.weights[1] * occupancy_ratio) / total_objective,
-            (self.weights[2] * total_distance) / total_objective
-        ]
-        print(f"Current contributions: {contributions}")
-        print(f"Current weights before adjustment: {self.weights}")
-
-        for i, contribution in enumerate(contributions):
-            if contribution > 0.5:
-                self.weights[i] += self.learning_rate * (1 - self.weights[i])
-            else:
-                self.weights[i] -= self.learning_rate * self.weights[i]
-
-        total = sum(self.weights)
-        self.weights = [w / total for w in self.weights]
-        print(f"Adjusted weights: {self.weights}")
-
     def a_star_search(self, start, goal):
         open_set = []
         heapq.heappush(open_set, (0, start))
@@ -146,9 +123,21 @@ class AStarAlgorithm:
 
         if best_path:
             unused_capacity, occupancy_ratio, total_distance = self.calculate_contributions(best_path)
-            self.adjust_weights(unused_capacity, occupancy_ratio, total_distance)
 
-        return {"path": best_path, "objective_value": best_objective_value}
+        if self.static_endpoints_name:
+            point_id = [
+                point['point'] for point in self.point_dict if point['name'].lower() == self.static_endpoints_name.lower()
+            ]
+            best_path += [point_id[0]]
+            additional_distance = [path['distance'] for path in self.path_dict if path['start_id'] == best_path[-2] and path['end_id'] == best_path[-1]]
+            total_distance += additional_distance[0]
+
+        return {
+            "path": self.generate_path_data(best_path), 
+            "objective_value": best_objective_value,
+            "unused_capacity": unused_capacity,
+            "occupancy_ratio": occupancy_ratio,
+            "total_distance": total_distance}
 
     def reconstruct_path(self, came_from, current):
         path = []
@@ -190,19 +179,53 @@ class AStarAlgorithm:
             occupancy_ratio += 1 / (accumulated_demand / self.max_capacity) if accumulated_demand > 0 else 0
 
         unused_capacity = max(self.max_capacity - accumulated_demand, 0)
-        print(f"Contributions for path {path}: Unused Capacity: {unused_capacity}, Occupancy Ratio: {occupancy_ratio}, Total Distance: {total_distance}")
+        print(f"Contributions for path {path}:\nUnused Capacity: {unused_capacity}, Occupancy Ratio: {occupancy_ratio}, Total Distance: {total_distance}")
         return unused_capacity, occupancy_ratio, total_distance
+    
+    def generate_path_data(self, path):
+        path_data = []
+        for i in range(len(path) - 1):
+            start, end = path[i], path[i + 1]
+            distance = next((path['distance'] for path in self.path_dict if path['start_id'] == start and path['end_id'] == end), None)
+            path_id = next((path['path_id'] for path in self.path_dict if path['start_id'] == start and path['end_id'] == end), None)
+            path_data.append({
+                "start": self.points[start],
+                "end": self.points[end],
+                "distance": distance,
+                "path_id": path_id
+            })
+        return path_data
+    
+    def __call__(self, start):
+        objective_values = []
+        path_data = []
+        for data in self.point_dict:
+            try:
+                result = self.a_star_search(start, data['point'])
+                objective_values.append(result['objective_value'])
+                path_data.append(result)
+            except Exception as _:
+                continue
+        min_objective_value = min(objective_values)
+        min_index = objective_values.index(min_objective_value)
+        return path_data[min_index]
 
 
 # Initialize parameters
-max_capacity = 10.0  # Maximum vehicle capacity
+max_capacity = 11.0  # Maximum vehicle capacity
+
+weights=(0.4, 0.4, 0.2)
 
 # Instantiate and run the A* algorithm
-a_star = AStarAlgorithm(point_dict, path_dict, max_capacity)
+a_star = AStarAlgorithm(point_dict, path_dict, max_capacity, weights)
 start_point = 0  # Define starting point
-goal_point = 7  # Define goal point
-result = a_star.a_star_search(start_point, goal_point)
+goal_point = 8  # Define goal point
+# result = a_star.a_star_search(start_point, goal_point)
+result = a_star(start_point)
 
 # Output the result
 print("Optimal path:", result["path"])
 print("Objective value:", result["objective_value"])
+print("Unused capacity:", result["unused_capacity"])
+print("Occupancy ratio:", result["occupancy_ratio"])
+print("Total distance:", result["total_distance"])

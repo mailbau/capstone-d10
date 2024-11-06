@@ -42,7 +42,7 @@ def convert_to_dict_format(tps_data, tps_status_data, path_data):
             "point": point_id, 
             "name": tps_info["name"], 
             "coordinates": (float(tps_info["latitude"]), float(tps_info["longitude"])), 
-            "demand": demand_value
+            "demand": demand_value * tps_info["capacity"]
         })
         tps_id_to_point_id[tps_id] = point_id
         point_id += 1
@@ -73,8 +73,8 @@ def calculate_route():
 
         # Calculate optimal route
         point_dict, path_dict = convert_to_dict_format(tps_data, tps_status, paths_data)
-        max_capacity = 11.0
-        weights = (0.4, 0.4, 0.2)
+        max_capacity = 20.0
+        weights = (0.35, 0.35, 0.3)
         start_point = "Dinas Lingkungan Hidup"
         end_point = "Dinas Lingkungan Hidup"
         a_star = AStarAlgorithm(point_dict, path_dict, max_capacity, weights, end_point)
