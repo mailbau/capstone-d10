@@ -14,6 +14,37 @@ def get_all_tps_status():
     except Exception as error:
         print('Error getting all TPS statuses:', error)
         return jsonify({'error': str(error)}), 500
+    
+# Get dummy TPS status and delete old logs
+@tps_status_controller.route('/tpsstatus/dummy', methods=['GET'])
+def get_dummy_tps_status():
+    try:
+        # Get all TPS status data from Firebase
+        tps_status_snapshot = db.reference('logv4').get()
+        tps_status = {}
+
+        # Reference to the Firebase 'logv4' node
+        logv4_ref = db.reference('logv4')
+
+        # Iterate over each TPS to get only the latest log entry and delete older logs
+        for tps_id, logs in (tps_status_snapshot or {}).items():
+            if logs:
+                # Convert keys to integers for sorting, then find the latest timestamp
+                timestamps = list(map(int, logs.keys()))
+                latest_timestamp = max(timestamps)
+                
+                # Add the latest log to the response dictionary
+                tps_status[tps_id] = logs[str(latest_timestamp)]
+                
+                # Delete all logs except the latest
+                for timestamp in timestamps:
+                    if timestamp != latest_timestamp:
+                        logv4_ref.child(f"{tps_id}/{timestamp}").delete()
+
+        return jsonify(tps_status), 200
+    except Exception as error:
+        print('Error getting latest TPS statuses:', error)
+        return jsonify({'error': str(error)}), 500
 
 # Add new TPS status
 @tps_status_controller.route('/tpsstatus', methods=['POST'])
