@@ -20,7 +20,7 @@ const MapComponent = () => {
                 try {
                     // Fetch the latest route data
                     // const routeResponse = await fetch('http://localhost:8080/route/latest');
-                    const routeResponse = await fetch('http://capstoned10.duckdns.org//route/latest');
+                    const routeResponse = await fetch('https://capstoned10.duckdns.org//route/latest');
                     const routeData = await routeResponse.json();
 
                     console.log("Route API Response:", routeData);

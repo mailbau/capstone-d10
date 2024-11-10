@@ -16,7 +16,7 @@ function DashboardPage() {
         const fetchRouteData = async () => {
             try {
                 // const response = await fetch('http://localhost:8080/route/latest');
-                const response = await fetch('http://capstoned10.duckdns.org//route/latest');
+                const response = await fetch('https://capstoned10.duckdns.org//route/latest');
                 const data = await response.json();
 
                 // Access the latest route data
