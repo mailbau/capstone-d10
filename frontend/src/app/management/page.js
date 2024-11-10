@@ -17,7 +17,7 @@ function Management() {
         const fetchRouteData = async () => {
             try {
                 // const response = await fetch('http://localhost:8080/route/latest');
-                const response = await fetch('http://13.210.129.9/route/latest');
+                const response = await fetch('https://13.210.129.9/route/latest');
                 const data = await response.json();
 
                 // Access the latest route data

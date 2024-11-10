@@ -20,7 +20,7 @@ const MapComponent = () => {
                 try {
                     // Fetch the latest route data
                     // const routeResponse = await fetch('http://localhost:8080/route/latest');
-                    const routeResponse = await fetch('http://13.210.129.9/route/latest');
+                    const routeResponse = await fetch('https://13.210.129.9/route/latest');
                     const routeData = await routeResponse.json();
 
                     console.log("Route API Response:", routeData);

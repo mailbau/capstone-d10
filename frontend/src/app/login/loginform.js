@@ -15,7 +15,7 @@ function LoginForm() {
 
         try {
             // const response = await fetch('http://localhost:8080/auth/login', {
-            const response = await fetch('http://13.210.129.9/auth/login', {
+            const response = await fetch('https://13.210.129.9/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
