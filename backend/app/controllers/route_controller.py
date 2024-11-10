@@ -17,22 +17,22 @@ DESTINATION_ID = "-OAkudzPCsvVxg3nVb4R"
 # Helper function to fetch data from endpoints
 def fetch_tps_data():
     # response = requests.get("http://localhost:8080/tps")
-    response = requests.get("http://13.210.129.9/tps")
+    response = requests.get("https://capstoned10.duckdns.org/tps")
     return response.json()
 
 def fetch_tps_status():
     # response = requests.get("http://localhost:8080/tpsstatus")
-    response = requests.get("http://13.210.129.9/tpsstatus")
+    response = requests.get("https://capstoned10.duckdns.org/tpsstatus")
     return response.json()
 
 def fetch_paths():
     # response = requests.get("http://localhost:8080/path")
-    response = requests.get("http://13.210.129.9/path")
+    response = requests.get("https://capstoned10.duckdns.org/path")
     return response.json()
 
 def fetch_dummy_tps_status():
     # response = requests.get("http://localhost:8080/tpsstatus/dummy")
-    response = requests.get("http://13.210.129.9/tpsstatus/dummy")
+    response = requests.get("https://capstoned10.duckdns.org/tpsstatus/dummy")
     return response.json()
 
 def convert_to_dict_format(tps_data, tps_status_data, path_data):
