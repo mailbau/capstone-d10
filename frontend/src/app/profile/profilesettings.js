@@ -33,7 +33,7 @@ function ProfileSettings() {
             }
 
             // const response = await fetch(`http://localhost:8080/user/${userId}`, { headers });
-            const response = await fetch(`https://capstoned10.duckdns.org/${userId}`, { headers });
+            const response = await fetch(`https://capstoned10.duckdns.org/user/${userId}`, { headers });
 
             if (response.ok) {
                 const data = await response.json();
