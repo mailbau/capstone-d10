@@ -11,7 +11,7 @@ function TpsTable() {
             try {
                 // Fetch TPS data
                 // const tpsResponse = await fetch('http://localhost:8080/tps');
-                const tpsResponse = await fetch('https://capstoned10.duckdns.org//tps');
+                const tpsResponse = await fetch('https://capstoned10.duckdns.org/tps');
                 const tpsData = await tpsResponse.json();
                 const formattedTpsData = Object.keys(tpsData).map((key) => ({
                     id: key,
@@ -20,7 +20,7 @@ function TpsTable() {
 
                 // Fetch status data
                 // const statusResponse = await fetch('http://localhost:8080/tpsstatus');
-                const statusResponse = await fetch('https://capstoned10.duckdns.org//tpsstatus');
+                const statusResponse = await fetch('https://capstoned10.duckdns.org/tpsstatus');
                 const rawStatusData = await statusResponse.json();
 
                 // Map status data by `tpsId`

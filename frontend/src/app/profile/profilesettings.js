@@ -76,7 +76,7 @@ function ProfileSettings() {
 
         try {
             // const response = await fetch(`http://localhost:8080/user/${userId}`, {
-            const response = await fetch(`https://capstoned10.duckdns.org//user/${userId}`, {
+            const response = await fetch(`https://capstoned10.duckdns.org/user/${userId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
