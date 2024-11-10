@@ -1,11 +1,13 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import Header from '../../components/header';
 import InfoCard from '../../components/infocard';
 import Footer from '../../components/footer';
 import WithAuth from '@/components/withAuth';
-import MapComponent from './mapComponent';
+
+const MapComponent = dynamic(() => import('./mapComponent'), { ssr: false });
 
 function DashboardPage() {
     const [totalDistance, setTotalDistance] = useState(null);
