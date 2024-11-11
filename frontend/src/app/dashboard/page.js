@@ -26,6 +26,7 @@ function DashboardPage() {
 
                 if (latestRoute && latestRoute.total_distance) {
                     setTotalDistance(latestRoute.total_distance);
+                    setRoutePoints(latestRoute.route);
                 } else {
                     console.error("No route data or total distance found.");
                 }
