@@ -11,6 +11,7 @@ const MapComponent = dynamic(() => import('./mapComponent'), { ssr: false });
 
 function DashboardPage() {
     const [totalDistance, setTotalDistance] = useState(null);
+    const [routePoints, setRoutePoints] = useState([]);
 
     useEffect(() => {
         const fetchRouteData = async () => {
@@ -42,6 +43,7 @@ function DashboardPage() {
                 <Header />
                 <main className="flex justify-center items-start px-4 py-10 w-full">
                     <div className="flex flex-col items-center w-full max-w-5xl space-y-8">
+
                         {/* Info Cards Section */}
                         <section className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
                             <InfoCard
@@ -51,8 +53,7 @@ function DashboardPage() {
                             />
                             <InfoCard
                                 title="Emission Information"
-                                description={`The emission information for the optimal garbage collection route is ${totalDistance ? (totalDistance * 0.0010).toFixed(2) + ' tons of CO2' : 'loading...'
-                                    }.`}
+                                description={`The emission information for the optimal garbage collection route is ${totalDistance ? (totalDistance * 0.0010).toFixed(2) + ' tons of CO2' : 'loading...'}.`}
                                 link="/emission"
                             />
                         </section>
@@ -72,6 +73,24 @@ function DashboardPage() {
                                 className="flex items-center justify-center w-full sm:w-[150px] px-4 py-3 bg-emerald-600 text-white rounded-full font-semibold shadow-md hover:bg-emerald-700 transition duration-150">
                                 Update Route
                             </button>
+                        </section>
+
+                        {/* Route Points List under the Button */}
+                        <section className="w-full bg-white p-4 rounded-lg shadow-md space-y-4">
+                            <h2 className="text-lg font-semibold">Route Points</h2>
+                            <ul className="space-y-2">
+                                {routePoints.map((point, index) => (
+                                    <li key={index} className="p-2 border rounded-md">
+                                        <p className="font-medium">Point {index + 1}: {point.start.name}</p>
+                                        <p>Distance to next: {point.distance.toFixed(2)} km</p>
+                                    </li>
+                                ))}
+                                {routePoints.length > 0 && (
+                                    <li className="p-2 border rounded-md">
+                                        <p className="font-medium">Final Point: {routePoints[routePoints.length - 1].end.name}</p>
+                                    </li>
+                                )}
+                            </ul>
                         </section>
                     </div>
                 </main>
