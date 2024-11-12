@@ -90,6 +90,7 @@ def calculate_final_route(start_point, final_end_point, max_capacity, weights):
     while updated_max_capacity > 0:
         a_star = AStarAlgorithm(point_dict, path_dict, updated_max_capacity, weights, end_point)
         optimal_path = a_star(current_start)
+        # print("optimal_path", optimal_path)
 
         if not optimal_path or not optimal_path["path_list"]:
             break  # Stop if no further path is returned
@@ -105,17 +106,18 @@ def calculate_final_route(start_point, final_end_point, max_capacity, weights):
 
         # Append the filtered path to final_route and update cumulative stats
         final_route.extend(filtered_path)
+        # print(optimal_path["path"])
         total_objective_value += optimal_path["objective_value"]
         total_distance += optimal_path["total_distance"]
         updated_max_capacity = optimal_path["unused_capacity"]  # Update capacity for next trip
 
         # Prepare for the next loop
-        current_start = optimal_path["route"][-1]["end"]["name"]  # Set previous destination as the new starting point
+        current_start = optimal_path["path"][-1]["end"]["name"]  # Set previous destination as the new starting point
         route_num += 1
 
     # Generate path data for the final combined route
     final_path_data, additional_distance = a_star.generate_path_data(final_route, final_end_point)  # Generate data for the entire combined route
-
+    total_objective_value = a_star.calculate_objective_value(final_route)  # Calculate objective value for the entire
     return {
         "route": final_path_data,
         "path_list": final_route,
@@ -261,7 +263,7 @@ def calculate_final_route_dummy(start_point, end_point, max_capacity, weights):
 @route_controller.route('/calculate_route', methods=['POST'])
 def calculate_route():
     try:
-        # Initial parameters
+        Initial parameters
         max_capacity = 20.0
         weights = (0.35, 0.35, 0.3)
         start_point = "Dinas Lingkungan Hidup"  # Defined starting point (garage)

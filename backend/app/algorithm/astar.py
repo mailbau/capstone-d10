@@ -160,7 +160,8 @@ class AStarAlgorithm:
                 point['point'] for point in self.point_dict if point['name'].lower() == end_point.lower()
             ]
             path += [point_id[0]]
-            additional_distance = [path['distance'] for path in self.path_dict if path['start_id'] == path[-2] and path['end_id'] == path[-1]]
+            # print("path", path)
+            additional_distance = [pth['distance'] for pth in self.path_dict if pth['start_id'] == path[-2] and pth['end_id'] == path[-1]]
             
         for i in range(len(path) - 1):
             start, end = path[i], path[i + 1]
