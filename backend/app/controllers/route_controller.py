@@ -263,7 +263,7 @@ def calculate_final_route_dummy(start_point, end_point, max_capacity, weights):
 @route_controller.route('/calculate_route', methods=['POST'])
 def calculate_route():
     try:
-        Initial parameters
+        # Initial parameters
         max_capacity = 20.0
         weights = (0.35, 0.35, 0.3)
         start_point = "Dinas Lingkungan Hidup"  # Defined starting point (garage)
