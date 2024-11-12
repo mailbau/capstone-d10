@@ -70,7 +70,7 @@ def convert_to_dict_format(tps_data, tps_status_data, path_data):
     return point_dict, path_dict
 
 
-def calculate_final_route(start_point, end_point, max_capacity, weights):
+def calculate_final_route(start_point, final_end_point, max_capacity, weights):
     # Fetch data from other endpoints
     tps_data = fetch_tps_data()
     tps_status = fetch_tps_status()
@@ -85,9 +85,10 @@ def calculate_final_route(start_point, end_point, max_capacity, weights):
     route_num = 1
     total_objective_value = 0
     total_distance = 0
-
+    end_point = None
+    updated_max_capacity = max_capacity
     while unvisited_points:
-        a_star = AStarAlgorithm(point_dict, path_dict, max_capacity, weights, end_point)
+        a_star = AStarAlgorithm(point_dict, path_dict, updated_max_capacity, weights, end_point)
         optimal_path = a_star(current_start)
 
         if not optimal_path or not optimal_path["path_list"]:
@@ -106,19 +107,20 @@ def calculate_final_route(start_point, end_point, max_capacity, weights):
         final_route.extend(filtered_path)
         total_objective_value += optimal_path["objective_value"]
         total_distance += optimal_path["total_distance"]
+        updated_max_capacity = optimal_path["unused_capacity"]  # Update capacity for next trip
 
         # Prepare for the next loop
         current_start = end_point  # Set previous destination as the new starting point
         route_num += 1
 
     # Generate path data for the final combined route
-    final_path_data = a_star.generate_path_data(final_route)  # Generate data for the entire combined route
+    final_path_data, additional_distance = a_star.generate_path_data(final_route, final_end_point)  # Generate data for the entire combined route
 
     return {
         "route": final_path_data,
         "path_list": final_route,
         "total_objective_value": total_objective_value,
-        "total_distance": total_distance
+        "total_distance": total_distance + additional_distance
     }
 
 # Calculate final route logic

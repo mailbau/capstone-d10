@@ -153,8 +153,15 @@ class AStarAlgorithm:
         # print(f"Contributions for path {path}:\nUnused Capacity: {unused_capacity}, Occupancy Ratio: {occupancy_ratio}, Total Distance: {total_distance}")
         return unused_capacity, occupancy_ratio, total_distance
     
-    def generate_path_data(self, path):
+    def generate_path_data(self, path, end_point=None):
         path_data = []
+        if end_point:
+            point_id = [
+                point['point'] for point in self.point_dict if point['name'].lower() == end_point.lower()
+            ]
+            path += [point_id[0]]
+            additional_distance = [path['distance'] for path in self.path_dict if path['start_id'] == path[-2] and path['end_id'] == path[-1]]
+            
         for i in range(len(path) - 1):
             start, end = path[i], path[i + 1]
             distance = next((path['distance'] for path in self.path_dict if path['start_id'] == start and path['end_id'] == end), None)
@@ -165,7 +172,10 @@ class AStarAlgorithm:
                 "distance": distance,
                 "path_id": path_id
             })
-        return path_data
+        if end_point:
+            return path_data, additional_distance[0]
+        else:
+            return path_data
     
     def __call__(self, start):
         objective_values = []
