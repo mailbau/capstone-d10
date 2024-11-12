@@ -87,7 +87,7 @@ def calculate_final_route(start_point, final_end_point, max_capacity, weights):
     total_distance = 0
     end_point = None
     updated_max_capacity = max_capacity
-    while unvisited_points:
+    while updated_max_capacity > 0:
         a_star = AStarAlgorithm(point_dict, path_dict, updated_max_capacity, weights, end_point)
         optimal_path = a_star(current_start)
 
@@ -110,7 +110,7 @@ def calculate_final_route(start_point, final_end_point, max_capacity, weights):
         updated_max_capacity = optimal_path["unused_capacity"]  # Update capacity for next trip
 
         # Prepare for the next loop
-        current_start = end_point  # Set previous destination as the new starting point
+        current_start = optimal_path["route"][-1]["end"]["name"]  # Set previous destination as the new starting point
         route_num += 1
 
     # Generate path data for the final combined route
